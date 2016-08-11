@@ -1,0 +1,27 @@
+resources:
+  - name: source-repo
+    type: git
+    source: { uri: 'https://github.com/nevenc-pivotal/simple-boot.git', branch: 'master' }
+jobs:
+  - name: unit-test
+    serial: true
+    public: true
+    plan:
+      - get: source-repo
+        trigger: true
+      - task: unit
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source: { repository: java, tag: 8-alpine }
+          inputs:
+            - name: source-repo
+          run:
+            path: sh
+            args:
+              - -c
+              - |
+                cd source-repo
+                ./mvnw test
+
