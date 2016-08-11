@@ -1,13 +1,14 @@
 resources:
-  - name: source-repo
+  - name: repo-master
     type: git
     source: { uri: 'https://github.com/nevenc-pivotal/simple-boot.git', branch: 'master' }
+    check_every: 10s # for demo
 jobs:
   - name: unit-test
     serial: true
     public: true
     plan:
-      - get: source-repo
+      - get: repo-master
         trigger: true
       - task: unit
         config:
@@ -16,12 +17,11 @@ jobs:
             type: docker-image
             source: { repository: java, tag: 8-alpine }
           inputs:
-            - name: source-repo
+            - name: repo-master
           run:
             path: sh
             args:
               - -c
               - |
-                cd source-repo
+                cd repo-master
                 ./mvnw test
-
