@@ -1,0 +1,6 @@
+github-uri: https://github.com/nevenc-pivotal/simple-boot.git
+cf-api: https://api.YOUR_CF_API
+cf-username: CF_USERNAME
+cf-password: CF_PASSWORD
+cf-org: CF_ORG
+cf-space: CF_SPACE
