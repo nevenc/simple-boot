@@ -4,3 +4,4 @@ memory: 512M
 applications:
 - name: simple-boot
   path: target/simple-boot-1.0.0-SNAPSHOT.jar
+  buildpack: https://github.com/cloudfoundry/java-buildpack.git
