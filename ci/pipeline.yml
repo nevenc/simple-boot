@@ -3,6 +3,15 @@ resources:
     type: git
     source: { uri: 'https://github.com/nevenc-pivotal/simple-boot.git', branch: 'master' }
     check_every: 10s # for demo
+  - name: cf-dev
+    type: cf
+    source:
+      api: {{cf-api}}
+      username: {{cf-username}}
+      password: {{cf-password}}
+      organization: {{cf-org}}
+      space: {{cf-space}}
+      skip_cert_check: true 
 jobs:
   - name: unit-test
     serial: true
@@ -25,3 +34,32 @@ jobs:
               - |
                 cd repo-master
                 ./mvnw test
+  - name: deploy-to-cf-dev
+    serial: true
+    plan:
+      - get: repo-master
+        trigger: true
+        passed: [unit-test]
+      - task: unit
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source: { repository: java, tag: 8-alpine }
+          inputs:
+            - name: repo-master
+          outputs:
+            - name: output
+          run:
+            path: sh
+            args:
+              - -c
+              - |
+                cd repo-master
+                ./mvnw package -DskipTests
+                cp target/*.jar ../output/simple-boot.jar
+      - put: cf-dev
+        params:
+          manifest: repo-master/manifest.yml
+          path: output/simple-boot.jar
+          current_app_name: simple-boot-ci
